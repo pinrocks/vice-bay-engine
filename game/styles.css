@@ -338,20 +338,28 @@ body {
 }
 
 .hud-cash-delta {
+  display: none;
   position: absolute;
-  right: 10px;
-  bottom: -20px;
+  right: calc(100% + 10px);
+  top: 50%;
   font-family: var(--font-mono);
   font-size: 13px;
   font-weight: 700;
+  white-space: nowrap;
+  pointer-events: none;
   opacity: 0;
-  transform: translateY(-4px);
+  transform: translateY(-50%);
   transition: opacity 0.25s ease, transform 0.25s ease;
 }
 
 .hud-cash-delta.is-visible {
+  display: block;
   opacity: 1;
-  transform: translateY(0);
+  transform: translateY(-50%);
+}
+
+.hud-cash-delta:empty {
+  display: none;
 }
 
 .hud-cash-delta.is-gain {
@@ -881,7 +889,7 @@ body {
     rgba(9, 14, 24, 0.72) 44%,
     rgba(9, 14, 24, 0.14) 100%
   );
-  backdrop-filter: blur(2px);
+  backdrop-filter: blur(1.5px);
 }
 
 .menu-shell {

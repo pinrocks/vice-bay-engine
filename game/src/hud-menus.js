@@ -70,7 +70,7 @@ export function createHudAndMenus(ctx) {
         <div class="hud-cash-row">
           <span class="hud-cash-prefix">$</span>
           <span class="hud-cash-value" data-el="cashValue">650</span>
-          <span class="hud-cash-delta" data-el="cashDelta">+$0</span>
+          <span class="hud-cash-delta" data-el="cashDelta"></span>
         </div>
 
         <div class="hud-weapon-card">
@@ -257,7 +257,7 @@ export function createHudAndMenus(ctx) {
       mapCtx.fill();
     }
 
-    // Police units
+    // Police units (wanted pursuit + staged/roadblock cruisers)
     const cops = wantedSys.getMinimapUnits();
     const copRed = Math.sin(radarFlashPhase) > 0;
     for (let i = 0; i < cops.length; i++) {
@@ -266,6 +266,24 @@ export function createHudAndMenus(ctx) {
       mapCtx.fillStyle = copRed ? '#ff4458' : '#3d9bff';
       mapCtx.beginPath();
       mapCtx.arc(u.x, u.z, u.kind === 'cruiser' ? 5.5 : 4.0, 0, Math.PI * 2);
+      mapCtx.fill();
+    }
+    const activeVehicles = vehicleMgr.vehicles || [];
+    for (let i = 0; i < activeVehicles.length; i++) {
+      const v = activeVehicles[i];
+      if (!v.isPolice || v.destroyed) continue;
+      if (Math.abs(v.x - p.x) > 210 || Math.abs(v.z - p.z) > 210) continue;
+      let alreadyDrawn = false;
+      for (let j = 0; j < cops.length; j++) {
+        if (cops[j].kind === 'cruiser' && Math.hypot(cops[j].x - v.x, cops[j].z - v.z) < 1.5) {
+          alreadyDrawn = true;
+          break;
+        }
+      }
+      if (alreadyDrawn) continue;
+      mapCtx.fillStyle = i % 2 === 0 ? (copRed ? '#ff4458' : '#3d9bff') : copRed ? '#3d9bff' : '#ff4458';
+      mapCtx.beginPath();
+      mapCtx.arc(v.x, v.z, 5.5, 0, Math.PI * 2);
       mapCtx.fill();
     }
 
@@ -867,6 +885,11 @@ export function createHudAndMenus(ctx) {
     },
     setHudVisible(visible) {
       els.hudLayer.classList.toggle('is-hidden', !visible);
+      lastCash = actorSys.player.cash;
+      cashDeltaTimer = 0;
+      els.cashValue.textContent = lastCash.toLocaleString();
+      els.cashDelta.classList.remove('is-visible', 'is-gain', 'is-loss');
+      els.cashDelta.textContent = '';
     },
     setFadeCurtain(visible) {
       els.fadeCurtain.classList.toggle('is-visible', Boolean(visible));

@@ -51,13 +51,12 @@ export function stageDeterministicShot(shotName, seed = 2026, ctx = {}) {
   actorSys.clearMissionPeds();
 
   if (preset === 'chase') {
-    // 1. Sunset golden-hour coastal pursuit along Miramar Ocean Drive
-    setTimeOfDay(0.755);
-    ui.closeMenus();
-    ui.setHudVisible(true);
+    // 1. Golden-hour coastal pursuit along Miramar Ocean Drive
+    setTimeOfDay(0.685);
+    missionSys.startMission('m6_convoy_chase', { skipBriefing: true, forceUnlock: true });
 
     const heroCar = vehicleMgr.spawnVehicle('sports', 274.2, -32, 0.16, {
-      color: 0xff3355,
+      color: 0xff3b4e,
       persistent: true,
     });
     heroCar.speed = 36;
@@ -66,7 +65,10 @@ export function stageDeterministicShot(shotName, seed = 2026, ctx = {}) {
     heroCar.vz = Math.cos(heroCar.yaw) * 34;
     heroCar.rig.chassis.rotation.z = -0.065;
     actorSys.enterVehicle(heroCar);
-    actorSys.addCash(4200);
+    actorSys.player.cash = 4850;
+
+    ui.closeMenus();
+    ui.setHudVisible(true);
 
     // Pursuing Patrulla cruisers with strobes lit
     wantedSys.setStars(3);
@@ -88,8 +90,9 @@ export function stageDeterministicShot(shotName, seed = 2026, ctx = {}) {
     copCar2.rig.sirenBlueMat.color.setHex(0xff2942);
 
     // Oncoming coastal traffic & speedboat offshore
-    vehicleMgr.spawnVehicle('sedan', 282.2, 8, Math.PI, { color: 0xf4a700, persistent: true });
-    vehicleMgr.spawnVehicle('boat', 392, -18, 0.25, { color: 0x1ec8d6, persistent: true });
+    vehicleMgr.spawnVehicle('sedan', 282.4, -40.5, Math.PI, { color: 0xf4a700, persistent: true });
+    vehicleMgr.spawnVehicle('suv', 282.0, -63.0, Math.PI, { color: 0xf2f5fa, persistent: true });
+    vehicleMgr.spawnVehicle('boat', 368, -92, 0.25, { color: 0x1ec8d6, persistent: true });
 
     // Drift tire smoke trail behind hero Mirage GT
     for (let i = 0; i < 10; i++) {
@@ -110,48 +113,57 @@ export function stageDeterministicShot(shotName, seed = 2026, ctx = {}) {
     });
     effects.update(0.03, camera.position);
     cityWorld.update(0.016, camera, 6.2);
-    ui.update(0.016, 0.755);
+    missionSys.update(0.016);
+    ui.update(0.016, 0.685);
     return preset;
   }
 
   if (preset === 'onfoot') {
     // 2. Sunny tropical morning outside Hotel Brisa Dorada in Miramar Beach
     setTimeOfDay(0.41);
-    ui.closeMenus();
-    ui.setHudVisible(true);
+    missionSys.startMission('m2_miramar_race', { skipBriefing: true, forceUnlock: true });
 
     actorSys.teleportPlayer(239.5, -55.5, 2.55);
     actorSys.giveWeapon('smg', 180, true);
     actorSys.healPlayer(100, 75);
 
-    missionSys.startMission('m2_miramar_race', { skipBriefing: true });
-    missionSys.setWaypointPreview(232, -62);
+    ui.closeMenus();
+    ui.setHudVisible(true);
 
-    // Parked coastal vehicles & strolling pedestrians
-    vehicleMgr.spawnVehicle('sports', 244.5, -49.5, -0.55, {
+    // Colorful coastal vehicles & strolling pedestrians framed in front of camera
+    vehicleMgr.spawnVehicle('sports', 235.2, -60.5, 0.42, {
       color: 0x1ee3cf,
       persistent: true,
     });
-    vehicleMgr.spawnVehicle('suv', 274, -68, 0, { color: 0xe6e9ef, persistent: true });
+    vehicleMgr.spawnVehicle('motorcycle', 238.4, -63.8, -0.65, {
+      color: 0xf4a700,
+      persistent: true,
+    });
+    vehicleMgr.spawnVehicle('sedan', 230.2, -69.5, 0.08, {
+      color: 0xff5e62,
+      persistent: true,
+    });
 
-    actorSys.spawnPed({ role: 'civilian', x: 234, z: -52, yaw: 0.6, persistent: true });
-    actorSys.spawnPed({ role: 'civilian', x: 246, z: -66, yaw: -1.2, persistent: true });
-    actorSys.spawnPed({ role: 'civilian', x: 286, z: -58, yaw: 0.1, persistent: true });
+    actorSys.spawnPed({ role: 'civilian', x: 237.2, z: -57.6, yaw: 0.55, persistent: true });
+    actorSys.spawnPed({ role: 'civilian', x: 233.0, z: -63.2, yaw: -0.85, persistent: true });
+    actorSys.spawnPed({ role: 'civilian', x: 239.2, z: -67.5, yaw: 2.35, persistent: true });
+    actorSys.spawnPed({ role: 'civilian', x: 231.5, z: -72.0, yaw: 0.25, persistent: true });
 
     cameraRig.setOverride({
       position: [245.4, 3.35, -48.6],
-      target: [235.5, 1.85, -61.5],
+      target: [233.5, 1.85, -66.0],
       fov: 58,
     });
     cityWorld.update(0.016, camera, 12.4);
     missionSys.update(0.016);
+    missionSys.setWaypointPreview(232, -62);
     ui.update(0.016, 0.41);
     return preset;
   }
 
   if (preset === 'combat') {
     // 3. Puerto Dorado Dockyard Heist firefight with tracers & exploding cartel SUV
-    setTimeOfDay(0.72);
+    setTimeOfDay(0.665);
     ui.closeMenus();
     ui.setHudVisible(true);
 
@@ -206,12 +218,27 @@ export function stageDeterministicShot(shotName, seed = 2026, ctx = {}) {
     effects.update(0.04, camera.position);
     cityWorld.update(0.016, camera, 18.0);
     missionSys.update(0.016);
-    ui.update(0.016, 0.72);
+    ui.update(0.016, 0.665);
     return preset;
   }
 
   // 4. Title / Safehouse golden coastal overlook
   setTimeOfDay(0.295);
+  try {
+    window.localStorage.setItem(
+      'sol_del_mar_save_v1',
+      JSON.stringify({
+        version: 1,
+        savedAt: 1700000000000,
+        timeOfDay: 0.38,
+        trafficDensity: 1,
+        actor: actorSys.getSaveData(),
+        missions: { completed: ['m1_welcome', 'm2_miramar_race'], highestUnlockedIndex: 3 },
+      }),
+    );
+  } catch (_err) {
+    // Ignore localStorage restrictions if unavailable
+  }
   ui.openTitleMenu();
 
   vehicleMgr.spawnVehicle('sports', 274, -76, 0.15, { color: 0xf4a700, persistent: true });
